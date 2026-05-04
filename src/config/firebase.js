@@ -1,3 +1,4 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -6,13 +7,13 @@ import { getDatabase } from "firebase/database";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCzQpfsPBnd0bNIYrMGhg5uYXjDhgX2_k8",
-  authDomain: "nalar-project-dcfc0.firebaseapp.com",
-  databaseURL: "https://nalar-project-dcfc0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "nalar-project-dcfc0",
-  storageBucket: "nalar-project-dcfc0.firebasestorage.app",
-  messagingSenderId: "650347212041",
-  appId: "1:650347212041:web:388df7a7e0ada7794b37d8"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
