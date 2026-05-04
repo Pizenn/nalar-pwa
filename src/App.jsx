@@ -5,15 +5,18 @@ import { ref, onValue, query, limitToLast } from 'firebase/database';
 function App() {
   const [anomalies, setAnomalies] = useState([]);
   const [isSystemActive, setIsSystemActive] = useState(true);
-  const isInitialLoad = useRef(true); // Mencegah spam notif saat web baru dibuka
+  
+  const isInitialLoad = useRef(true); 
   const lastAnomalyId = useRef(null);
 
+  // 1. Meminta Izin Notifikasi Sistem
   useEffect(() => {
     if ("Notification" in window && Notification.permission !== "granted") {
       Notification.requestPermission();
     }
   }, []);
 
+  // 2. Listener Firebase
   useEffect(() => {
     const anomalyRef = ref(db, 'anomali');
     const latestAnomaliesQuery = query(anomalyRef, limitToLast(10));
@@ -22,7 +25,6 @@ function App() {
       if (snapshot.exists()) {
         const list = [];
         
-        // CARA BENAR: Gunakan forEach agar urutan waktu dari Firebase tidak acak
         snapshot.forEach((childSnapshot) => {
           list.push({
             id: childSnapshot.key,
@@ -30,41 +32,54 @@ function App() {
           });
         });
         
-        // Dibalik agar data PALING BARU pasti menjadi list[0]
         list.reverse();
         setAnomalies(list);
         
         const dataTerbaru = list[0];
 
-        // LOGIKA NOTIFIKASI ANTI-SPAM
+        // LOGIKA NOTIFIKASI ANTI-SPAM & PWA COMPATIBLE
         if (!isInitialLoad.current) {
-          // Cek apakah ini benar-benar anomali baru berdasarkan ID-nya
           if (dataTerbaru && dataTerbaru.id !== lastAnomalyId.current) {
             
-            lastAnomalyId.current = dataTerbaru.id; // Kunci ID ini agar tidak dinotif 2x
+            lastAnomalyId.current = dataTerbaru.id; 
 
-            // Membunyikan Suara
+            // Membunyikan Suara (Mungkin diblokir HP jika layar mati, tapi kita coba)
             const audio = new Audio('https://actions.google.com/google_terminal/beep.mp3');
             audio.play().catch(e => console.log("Menunggu interaksi user untuk suara"));
 
-            // Memunculkan Pop-up Notifikasi OS
+            // Memunculkan Pop-up Notifikasi via SERVICE WORKER (Cara PWA Asli)
             if ("Notification" in window && Notification.permission === "granted") {
-              new Notification("⚠️ ANOMALI SUHU TERDETEKSI!", {
-                body: `Peringatan: Suhu ${dataTerbaru.suhu}°C terdeteksi pada ${dataTerbaru.waktu}. Segera cek Station 01!`,
-                icon: "/pwa-192x192.png", 
-                vibrate: [200, 100, 200] 
-              });
+              if (navigator.serviceWorker) {
+                navigator.serviceWorker.ready.then((registration) => {
+                  registration.showNotification("⚠️ ANOMALI SUHU TERDETEKSI!", {
+                    body: `Peringatan: Suhu ${dataTerbaru.suhu}°C terdeteksi pada ${dataTerbaru.waktu}. Segera cek Station 01!`,
+                    icon: "/pwa-192x192.png", 
+                    vibrate: [200, 100, 200, 100, 200], // Pola getar SOS
+                    tag: "anomali-alert", // Mencegah notifikasi menumpuk panjang
+                    requireInteraction: true // Notifikasi tidak akan hilang sampai diklik
+                  });
+                }).catch((err) => {
+                  console.error("Service Worker tidak siap: ", err);
+                  // Fallback jika Service worker gagal
+                  new Notification("⚠️ ANOMALI SUHU!", { body: `Suhu ${dataTerbaru.suhu}°C` });
+                });
+              } else {
+                // Fallback untuk browser laptop biasa
+                new Notification("⚠️ ANOMALI SUHU TERDETEKSI!", {
+                  body: `Peringatan: Suhu ${dataTerbaru.suhu}°C terdeteksi pada ${dataTerbaru.waktu}. Segera cek Station 01!`,
+                  icon: "/pwa-192x192.png"
+                });
+              }
             }
           }
         } else {
-          // Jika web baru dibuka, tandai sudah loading dan rekam ID terakhir diam-diam
           isInitialLoad.current = false;
           if (list.length > 0) {
             lastAnomalyId.current = dataTerbaru.id;
           }
         }
       } else {
-        setAnomalies([]); // Bersihkan UI jika database anomali kosong
+        setAnomalies([]); 
       }
     });
 
@@ -76,9 +91,13 @@ function App() {
     if ("Notification" in window) {
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
-          alert("Notifikasi berhasil diaktifkan!");
+          alert("Notifikasi berhasil diaktifkan! Sistem siap menerima peringatan.");
+        } else {
+          alert("Izin notifikasi ditolak. Mohon izinkan melalui pengaturan browser.");
         }
       });
+    } else {
+      alert("Browser/Perangkat ini tidak mendukung notifikasi web.");
     }
   };
 
@@ -90,15 +109,14 @@ function App() {
           <p className="text-gray-400 text-sm">Dashboard Asisten Lab - Pemantauan Praktikan</p>
         </div>
         <div className="flex items-center gap-4">
-          {/* Tombol izin notifikasi jika browser memblokir otomatis */}
           <button 
             onClick={requestNotificationPermission}
-            className="text-xs bg-cyan-700 hover:bg-cyan-600 px-3 py-1 rounded transition-colors"
+            className="text-xs bg-cyan-700 hover:bg-cyan-600 px-3 py-1 rounded transition-colors shadow-lg"
           >
             🔔 Izinkan Notifikasi
           </button>
           
-          <div className="flex items-center gap-2 bg-gray-800 px-4 py-2 rounded-full border border-gray-600">
+          <div className="flex items-center gap-2 bg-gray-800 px-4 py-2 rounded-full border border-gray-600 shadow-lg">
             <span className={`h-3 w-3 rounded-full ${isSystemActive ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
             <span className="text-xs font-mono">{isSystemActive ? 'CONNECTED' : 'OFFLINE'}</span>
           </div>
@@ -128,17 +146,14 @@ function App() {
                   <p>📅 Waktu: {item.waktu || 'Baru saja'}</p>
                   <p>📍 Lokasi: Station 01 (Lab)</p>
                 </div>
-                <button className="mt-4 w-full bg-navy-medis text-white py-2 rounded-lg text-sm font-semibold hover:bg-cyan-900 transition-colors">
-                  Tandai Selesai
-                </button>
               </div>
             ))}
           </div>
         )}
       </main>
 
-      <footer className="mt-auto pt-8 text-gray-600 text-xs text-center">
-        &copy; 2026 Muhammad Hafiz Nur - NALAR Project
+      <footer className="mt-auto pt-8 pb-4 text-gray-600 text-xs text-center">
+        &copy; 2026 NALAR Project
       </footer>
     </div>
   );
