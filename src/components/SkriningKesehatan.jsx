@@ -167,7 +167,7 @@ function SkriningKesehatan({ goHome }) {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 border-b pb-4">
-        <h2 className="text-lg font-bold text-gray-700">Log Peringatan</h2>
+        <h2 className="text-lg font-bold text-gray-700">Riwayat Peringatan</h2>
         
         <div className="flex bg-gray-100 p-1 rounded-lg w-fit">
           <button 
