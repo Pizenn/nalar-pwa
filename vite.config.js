@@ -9,31 +9,23 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'NALAR Dashboard',
-        short_name: 'NALAR',
-        description: 'Sistem Deteksi Anomali Suhu Real-time',
-        theme_color: '#0f1432', // Warna status bar HP akan menjadi Navy Blue
-        background_color: '#0f1432', // Warna layar loading
-        display: 'standalone', // Menghilangkan URL bar browser saat dibuka
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ]
-      }
+  name: 'NALAR Project Station', // Nama panjang saat instalasi
+  short_name: 'NALAR',           // Nama pendek di layar HP
+  description: 'Pusat Kendali Asisten Laboratorium',
+  theme_color: '#ffffff',
+  icons: [
+    {
+      src: 'pwa-192x192.png', // <-- Pastikan kamu menaruh gambar ukuran 192x192 di folder public/
+      sizes: '192x192',
+      type: 'image/png'
+    },
+    {
+      src: 'pwa-512x512.png', // <-- Pastikan kamu menaruh gambar ukuran 512x512 di folder public/
+      sizes: '512x512',
+      type: 'image/png'
+    }
+  ]
+}
     })
   ]
 })

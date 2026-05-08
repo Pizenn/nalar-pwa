@@ -15,3 +15,16 @@ body {
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
+
+@keyframes alertBlink {
+  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.8), inset 0 0 0 6px rgba(220, 38, 38, 1); }
+  50% { box-shadow: 0 0 30px 10px rgba(220, 38, 38, 0), inset 0 0 0 6px rgba(220, 38, 38, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0), inset 0 0 0 6px rgba(220, 38, 38, 1); }
+}
+
+/* Tambahkan !important agar tidak ditimpa oleh default SweetAlert2 */
+.card-anomali-blink {
+  animation: alertBlink 1s infinite !important;
+  border-radius: 15px !important;
+  z-index: 99999 !important; /* Memastikan kotak selalu di paling atas */
+}

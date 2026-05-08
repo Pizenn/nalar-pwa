@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { db } from '../config/firebase'; 
 import { ref, onValue, query, limitToLast } from 'firebase/database';
 import { Icon } from '@iconify/react';
+import Swal from 'sweetalert2';
 
 // --- FUNGSI EKSTRAKSI WAKTU DARI FIREBASE ID ---
 const PUSH_CHARS = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
@@ -98,6 +99,31 @@ function SkriningKesehatan({ goHome }) {
                 });
               });
             }
+          let iconJenis = dataTerbaru.status === 'HIPOTERMIA' ? 'info' : 'warning';
+            let warnaTombol = dataTerbaru.status === 'HIPOTERMIA' ? '#3085d6' : '#d33';
+            let statusText = dataTerbaru.status || 'TIDAK NORMAL';
+
+            Swal.fire({
+              title: '⚠️ Peringatan Anomali!',
+              html: `
+                <div style="font-size: 1.1em; text-align: left; margin-top: 5px;">
+                  Status: <b style="color: ${warnaTombol};">${statusText}</b><br>
+                  Suhu Terbaca: <b>${Number(dataTerbaru.suhu).toFixed(1)} °C</b><br>
+                  Waktu: ${dataTerbaru.waktu}
+                </div>
+              `,
+              icon: iconJenis,
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 8000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+              }
+            });
+            // --- AKHIR TAMBAHAN SWEETALERT2 ---
           }
         } else {
           isInitialLoad.current = false;
