@@ -3,7 +3,7 @@ import { ref, onValue } from "firebase/database";
 import { db } from "../config/firebase"; 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-export default function ApdDashboard() {
+export default function ApdDashboard({ goHome }) {
   const [historyHariIni, setHistoryHariIni] = useState([]);
   const [semuaRiwayat, setSemuaRiwayat] = useState([]);
 
@@ -93,10 +93,18 @@ export default function ApdDashboard() {
   return (
     <div className="min-h-screen bg-[#f7f8fc] px-6 py-10">
       <div className="max-w-7xl mx-auto">
-        {/* HEADER & STATS CARD (Sama seperti sebelumnya) */}
+        
+        {/* TOMBOL KEMBALI */}
+        <button 
+          onClick={goHome}
+          className="mb-8 flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-all hover:-translate-x-1"
+        >
+          <span className="text-xl">←</span> Kembali
+        </button>
+
+        {/* HEADER & STATS CARD */}
         <div className="mb-10">
-          <h1 className="text-5xl font-black text-slate-800">NALAR Record</h1>
-          <p className="text-slate-500 text-xl mt-3">Statistik Pelanggaran 30 Hari Terakhir</p>
+          <h1 className="text-5xl font-black text-slate-800">Deteksi APD</h1>
         </div>
 
         {/* STATS CARD */}
