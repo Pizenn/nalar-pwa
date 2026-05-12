@@ -34,7 +34,7 @@ function App() {
       
       {/* Footer Utama yang muncul di semua halaman */}
       <footer className="mt-16 text-center text-gray-400 text-xs font-medium">
-        &copy; {new Date().getFullYear()} NALAR Project - Universitas Andalas
+        &copy; {new Date().getFullYear()} SMART Station - Universitas Andalas
       </footer>
     </div>
   );
