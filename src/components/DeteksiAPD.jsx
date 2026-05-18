@@ -1,14 +1,22 @@
 import { useEffect, useState, useMemo } from "react";
+import { db_apd } from "../config/firebase_apd";
 import { ref, onValue } from "firebase/database";
-import { db } from "../config/firebase"; 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-export default function ApdDashboard({ goHome }) {
+export default function ApdDashboard({goHome}) {
   const [historyHariIni, setHistoryHariIni] = useState([]);
   const [semuaRiwayat, setSemuaRiwayat] = useState([]);
 
   useEffect(() => {
-    const historyRef = ref(db, "history");
+    const historyRef = ref(db_apd, "history");
 
     const unsubscribe = onValue(historyRef, (snapshot) => {
       const data = snapshot.val();
@@ -94,7 +102,7 @@ export default function ApdDashboard({ goHome }) {
     <div className="min-h-screen bg-[#f7f8fc] px-6 py-10">
       <div className="max-w-7xl mx-auto">
         
-        {/* TOMBOL KEMBALI */}
+        {/* ================= TOMBOL KEMBALI ================= */}
         <button 
           onClick={goHome}
           className="mb-8 flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-all hover:-translate-x-1"
@@ -102,10 +110,10 @@ export default function ApdDashboard({ goHome }) {
           <span className="text-xl">←</span> Kembali
         </button>
 
-        {/* HEADER & STATS CARD */}
+        {/* HEADER & STATS CARD (Sama seperti sebelumnya) */}
         <div className="mb-10">
-          <h1 className="text-5xl font-black text-slate-800">Deteksi APD</h1>
-        </div>
+          <h1 className="text-5xl font-black text-slate-800">NALAR Record</h1>
+          </div>
 
         {/* STATS CARD */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
