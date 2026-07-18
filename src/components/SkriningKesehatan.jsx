@@ -4,7 +4,7 @@ import { ref, onValue, query, limitToLast } from 'firebase/database';
 import { Icon } from '@iconify/react';
 import Swal from 'sweetalert2';
 
-// --- FUNGSI EKSTRAKSI WAKTU DARI FIREBASE ID ---
+//Ekstraksi Waktu dari Firebase ID
 const PUSH_CHARS = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
 
 const getTimestampFromId = (firebaseId) => {
@@ -51,7 +51,7 @@ function SkriningKesehatan({ goHome }) {
     }
   }, []);
 
-  // --- 1. LISTENER KONEKSI REAL-TIME ---
+  //Listener Koneksi
   useEffect(() => {
     const connectedRef = ref(db, '.info/connected');
     const unsubscribeConnected = onValue(connectedRef, (snap) => {
@@ -65,7 +65,7 @@ function SkriningKesehatan({ goHome }) {
     return () => unsubscribeConnected();
   }, []);
 
-  // --- 2. LISTENER DATA ANOMALI ---
+  //Listener Anomali
   useEffect(() => {
     const anomalyRef = ref(db, 'anomali');
     const latestAnomaliesQuery = query(anomalyRef, limitToLast(50));
@@ -91,8 +91,8 @@ function SkriningKesehatan({ goHome }) {
             if ("Notification" in window && Notification.permission === "granted" && navigator.serviceWorker) {
               navigator.serviceWorker.ready.then((registration) => {
                 registration.showNotification("⚠️ ANOMALI SUHU TERDETEKSI!", {
-                  // PERUBAHAN 1: Format suhu di pop-up notifikasi
-                  body: `Peringatan: Suhu ${Number(dataTerbaru.suhu).toFixed(1)}°C terdeteksi pada ${dataTerbaru.waktu}.`,
+                  //Format teks notifikasi
+                  body: `Peringatan: Suhu ${dataTerbaru.suhu}°C terdeteksi pada ${dataTerbaru.waktu}.`,
                   icon: "/pwa-192x192.png", 
                   vibrate: [200, 100, 200], 
                   tag: "anomali-alert"
@@ -108,7 +108,7 @@ function SkriningKesehatan({ goHome }) {
               html: `
                 <div style="font-size: 1.1em; text-align: left; margin-top: 5px;">
                   Status: <b style="color: ${warnaTombol};">${statusText}</b><br>
-                  Suhu Terbaca: <b>${Number(dataTerbaru.suhu).toFixed(1)} °C</b><br>
+                  Suhu Terbaca: <b>${dataTerbaru.suhu} °C</b><br>
                   Waktu: ${dataTerbaru.waktu}
                 </div>
               `,
@@ -123,7 +123,6 @@ function SkriningKesehatan({ goHome }) {
                 toast.addEventListener('mouseleave', Swal.resumeTimer);
               }
             });
-            // --- AKHIR TAMBAHAN SWEETALERT2 ---
           }
         } else {
           isInitialLoad.current = false;
@@ -165,7 +164,6 @@ function SkriningKesehatan({ goHome }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-shadow">
           <div className="p-4 bg-rose-50 rounded-xl text-rose-500">
-            {/* Mengganti Emoji Kalender */}
             <Icon icon="lucide:calendar-days" width="32" height="32" />
           </div>
           <div>
@@ -179,7 +177,6 @@ function SkriningKesehatan({ goHome }) {
 
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-shadow">
           <div className="p-4 bg-blue-50 rounded-xl text-blue-500">
-            {/* Mengganti Emoji Laci */}
             <Icon icon="lucide:archive" width="32" height="32" />
           </div>
           <div>
@@ -223,28 +220,25 @@ function SkriningKesehatan({ goHome }) {
               <div key={item.id} className={`bg-white border-l-4 p-5 rounded-xl shadow-sm transition-all hover:-translate-y-1 ${isToday ? 'border-rose-500' : 'border-gray-300'}`}>
                 <div className="flex justify-between items-center mb-4">
                   <span className={`font-bold text-xl ${isToday ? 'text-gray-800' : 'text-gray-400'}`}>
-                    {Number(item.suhu).toFixed(1)}°C
+                    {item.suhu}°C
                   </span>
                   {isToday && <span className="text-[10px] font-bold bg-rose-100 text-rose-600 px-2 py-1 rounded-full">HARI INI</span>}
                 </div>
                 
                 <div className="text-sm space-y-2">
                   <p className="flex items-center gap-2">
-                    {/* Mengganti Emoji Kalender kecil */}
                     <Icon icon="lucide:calendar" className="text-blue-500" width="16" height="16" />
                     <span className="font-medium text-gray-400">
                       {formatTanggalLengkap(item.id)}
                     </span>
                   </p>
                   <p className="flex items-center gap-2">
-                    {/* Mengganti Emoji Jam */}
                     <Icon icon="lucide:clock" className="text-amber-500" width="16" height="16" />
                     <span className="font-medium text-gray-400">
                       {item.waktu || 'Waktu tidak tersedia'}
                     </span>
                   </p>
                   <p className="flex items-center gap-2 text-gray-400">
-                    {/* Mengganti Emoji Lokasi */}
                     <Icon icon="lucide:map-pin" className="text-emerald-500" width="16" height="16" />
                     Station 01 (Pintu Masuk)
                   </p>
